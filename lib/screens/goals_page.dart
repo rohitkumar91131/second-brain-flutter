@@ -130,8 +130,9 @@ class _GoalsPageState extends State<GoalsPage> {
             ),
           ),
           const SizedBox(width: 16),
-          const Text('Track your long-term objectives and metrics',
-              style: TextStyle(fontSize: 12, color: AppTheme.notionMuted)),
+          if (MediaQuery.of(context).size.width > 600)
+            const Text('Track your long-term objectives and metrics',
+                style: TextStyle(fontSize: 12, color: AppTheme.notionMuted)),
           const Spacer(),
           CustomButton(
             onPressed: () async {

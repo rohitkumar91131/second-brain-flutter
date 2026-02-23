@@ -152,8 +152,10 @@ class _JournalPageState extends State<JournalPage> {
   }
 
   Widget _buildToolbar() {
+    final isNarrow = MediaQuery.of(context).size.width < 600;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      padding: EdgeInsets.symmetric(
+          horizontal: isNarrow ? 16 : 24, vertical: isNarrow ? 12 : 16),
       decoration: const BoxDecoration(
         color: Colors.white,
         border: Border(bottom: BorderSide(color: AppTheme.notionBorder)),
@@ -183,42 +185,44 @@ class _JournalPageState extends State<JournalPage> {
             ],
           ),
           const Spacer(),
-          // Mood Selector
-          Container(
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: AppTheme.notionHover.withOpacity(0.5),
-              borderRadius: BorderRadius.circular(30),
-            ),
-            child: Row(
-              children: _moods.map((mood) {
-                bool isSelected = _selectedMood == mood;
-                return InkWell(
-                  onTap: () => setState(() => _selectedMood = mood),
-                  child: Container(
-                    width: 32,
-                    height: 32,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: isSelected ? Colors.white : Colors.transparent,
-                      shape: BoxShape.circle,
-                      boxShadow: isSelected
-                          ? [
-                              BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2))
-                            ]
-                          : null,
+          // Mood Selector (hidden on narrow screens to prevent overflow)
+          if (!isNarrow) ...[
+            Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: AppTheme.notionHover.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: Row(
+                children: _moods.map((mood) {
+                  bool isSelected = _selectedMood == mood;
+                  return InkWell(
+                    onTap: () => setState(() => _selectedMood = mood),
+                    child: Container(
+                      width: 32,
+                      height: 32,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: isSelected ? Colors.white : Colors.transparent,
+                        shape: BoxShape.circle,
+                        boxShadow: isSelected
+                            ? [
+                                BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 2))
+                              ]
+                            : null,
+                      ),
+                      child: Text(_moodEmojis[mood] ?? '',
+                          style: const TextStyle(fontSize: 16)),
                     ),
-                    child: Text(_moodEmojis[mood] ?? '',
-                        style: const TextStyle(fontSize: 16)),
-                  ),
-                );
-              }).toList(),
+                  );
+                }).toList(),
+              ),
             ),
-          ),
-          const SizedBox(width: 16),
+            const SizedBox(width: 16),
+          ],
           CustomButton(
             onPressed: _addEntry,
             icon: LucideIcons.plus,
