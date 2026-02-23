@@ -115,55 +115,92 @@ class _TasksPageState extends State<TasksPage> {
   }
 
   Widget _buildToolbar() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: AppTheme.notionBorder)),
+    final isNarrow = MediaQuery.of(context).size.width < 600;
+
+    final viewSwitcher = Container(
+      padding: const EdgeInsets.all(2),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF7F7F5),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: AppTheme.notionBorder),
       ),
       child: Row(
         children: [
-          // View Switcher (Web Parity)
-          Container(
-            padding: const EdgeInsets.all(2),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF7F7F5),
-              borderRadius: BorderRadius.circular(6),
-              border: Border.all(color: AppTheme.notionBorder),
-            ),
-            child: Row(
-              children: [
-                _buildViewTab(LucideIcons.list, 'List', 'list'),
-                _buildViewTab(LucideIcons.layoutGrid, 'Board', 'board'),
-                _buildViewTab(LucideIcons.table, 'Table', 'table'),
-                _buildViewTab(LucideIcons.calendar, 'Calendar', 'calendar'),
-              ],
-            ),
-          ),
-          const SizedBox(width: 12),
-          // Filter tabs
-          _buildFilterTab('all', 'All'),
-          _buildFilterTab('active', 'Active'),
-          _buildFilterTab('completed', 'Completed'),
-          const Spacer(),
-          CustomButton(
-            onPressed: () async {
-              final result = await showDialog(
-                context: context,
-                builder: (context) => const QuickAddModal(defaultType: 'task'),
-              );
-              if (result == true) _loadTasks();
-            },
-            icon: LucideIcons.plus,
-            text: 'New Task',
-            fontSize: 12,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          ),
+          _buildViewTab(LucideIcons.list, 'List', 'list',
+              showLabel: !isNarrow),
+          _buildViewTab(LucideIcons.layoutGrid, 'Board', 'board',
+              showLabel: !isNarrow),
+          _buildViewTab(LucideIcons.table, 'Table', 'table',
+              showLabel: !isNarrow),
+          _buildViewTab(LucideIcons.calendar, 'Calendar', 'calendar',
+              showLabel: !isNarrow),
         ],
       ),
     );
+
+    final addButton = CustomButton(
+      onPressed: () async {
+        final result = await showDialog(
+          context: context,
+          builder: (context) => const QuickAddModal(defaultType: 'task'),
+        );
+        if (result == true) _loadTasks();
+      },
+      icon: LucideIcons.plus,
+      text: 'New Task',
+      fontSize: 12,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+    );
+
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: isNarrow ? 12 : 24,
+        vertical: isNarrow ? 8 : 12,
+      ),
+      decoration: const BoxDecoration(
+        border: Border(bottom: BorderSide(color: AppTheme.notionBorder)),
+      ),
+      child: isNarrow
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    viewSwitcher,
+                    const Spacer(),
+                    addButton,
+                  ],
+                ),
+                const SizedBox(height: 8),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _buildFilterTab('all', 'All'),
+                      _buildFilterTab('active', 'Active'),
+                      _buildFilterTab('completed', 'Completed'),
+                    ],
+                  ),
+                ),
+              ],
+            )
+          : Row(
+              children: [
+                viewSwitcher,
+                const SizedBox(width: 12),
+                _buildFilterTab('all', 'All'),
+                _buildFilterTab('active', 'Active'),
+                _buildFilterTab('completed', 'Completed'),
+                const Spacer(),
+                addButton,
+              ],
+            ),
+    );
   }
 
-  Widget _buildViewTab(IconData icon, String label, String view) {
+  Widget _buildViewTab(IconData icon, String label, String view,
+      {bool showLabel = true}) {
     bool isSelected = _view == view;
     return InkWell(
       onTap: () => setState(() => _view = view),
@@ -188,15 +225,18 @@ class _TasksPageState extends State<TasksPage> {
             Icon(icon,
                 size: 13,
                 color: isSelected ? AppTheme.notionText : AppTheme.notionMuted),
-            const SizedBox(width: 6),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                color: isSelected ? AppTheme.notionText : AppTheme.notionMuted,
+            if (showLabel) ...[
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                  color:
+                      isSelected ? AppTheme.notionText : AppTheme.notionMuted,
+                ),
               ),
-            ),
+            ],
           ],
         ),
       ),

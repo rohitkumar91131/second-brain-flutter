@@ -129,8 +129,9 @@ class _ProjectsPageState extends State<ProjectsPage> {
             ),
           ),
           const SizedBox(width: 16),
-          const Text('Displaying all active and planned projects',
-              style: TextStyle(fontSize: 12, color: AppTheme.notionMuted)),
+          if (MediaQuery.of(context).size.width > 600)
+            const Text('Displaying all active and planned projects',
+                style: TextStyle(fontSize: 12, color: AppTheme.notionMuted)),
           const Spacer(),
           CustomButton(
             onPressed: () async {
