@@ -143,7 +143,8 @@ class _MainLayoutState extends State<MainLayout> {
                   onToggle: () => Navigator.pop(context),
                 )
               : null,
-          body: Row(
+          body: SafeArea(
+            child: Row(
             children: [
               if (isDesktop)
                 Sidebar(
@@ -168,6 +169,18 @@ class _MainLayoutState extends State<MainLayout> {
                       ),
                       child: Row(
                         children: [
+                          // Hamburger menu button for mobile
+                          if (!isDesktop) ...[
+                            IconButton(
+                              icon: const Icon(LucideIcons.menu, size: 18, color: AppTheme.notionText),
+                              onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+                              tooltip: 'Open navigation menu',
+                              visualDensity: VisualDensity.compact,
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                            ),
+                            const SizedBox(width: 8),
+                          ],
                           // Breadcrumb / Title
                           Row(
                             mainAxisSize: MainAxisSize.min,
@@ -196,7 +209,7 @@ class _MainLayoutState extends State<MainLayout> {
                                 onTap: _onSearch,
                                 borderRadius: BorderRadius.circular(4),
                                 child: Container(
-                                  width: 200,
+                                  width: isDesktop ? 200 : 140,
                                   height: 28,
                                   padding: const EdgeInsets.symmetric(horizontal: 8),
                                   decoration: BoxDecoration(
@@ -301,6 +314,7 @@ class _MainLayoutState extends State<MainLayout> {
               ),
             ],
           ),
+          ), // SafeArea
         ),
       ),
     );
