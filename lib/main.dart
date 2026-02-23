@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:second_brain_flutter/theme/app_theme.dart';
 import 'package:second_brain_flutter/screens/landing_page.dart';
 import 'package:second_brain_flutter/screens/login_page.dart';
@@ -9,6 +10,15 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Enable edge-to-edge mode (equivalent to 100dvh in CSS/Tailwind) for Android and iOS
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarDividerColor: Colors.transparent,
+    ),
+  );
   await dotenv.load(fileName: ".env");
   final loggedIn = await AuthService.isLoggedIn();
   runApp(SecondBrainApp(initialRoute: loggedIn ? '/dashboard' : '/'));
